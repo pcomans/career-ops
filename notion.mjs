@@ -17,8 +17,8 @@
  */
 import { readFileSync, existsSync } from 'fs';
 import {
-  resolveDBs, findRecords, getRecordById, queryDB, plain, getBlocks,
-  createPage, appendBlocks, api, rich, mdToBlocks, blocksToMd,
+  resolveDBs, findRecords, getRecordById, queryDB, plain,
+  createPage, appendBlocks, api, rich, mdToBlocks, pageMarkdown,
   canonicalStatus, statusLabels,
 } from './notion-lib.mjs';
 
@@ -128,17 +128,17 @@ async function cmdLog(apps) {
 
 async function cmdGet(apps) {
   const rec = await resolveTarget(apps);
-  const blocks = await getBlocks(rec.id);
-  const md = blocksToMd(blocks);
-  if (JSON_OUT) { console.log(JSON.stringify({ ...summaryProps(rec.raw), id: rec.id, url: rec.url, body: md }, null, 2)); return; }
+  const md = await pageMarkdown(rec.id);
+  if (JSON_OUT) {
+    console.log(JSON.stringify({ company: rec.company, role: rec.role, status: rec.status, score: rec.score,
+      notes: plain(rec.raw.properties.Notes), connections: plain(rec.raw.properties.Connections),
+      id: rec.id, url: rec.raw.properties.URL?.url || null, body: md }, null, 2));
+    return;
+  }
   console.log(`# ${rec.company} — ${rec.role}`);
   console.log(`Status: ${rec.status} | Score: ${rec.score ?? '—'} | URL: ${rec.raw.properties.URL?.url || '—'}`);
   console.log(`id: ${rec.id}\n`);
   console.log(md || '(empty body)');
-}
-function summaryProps(r) {
-  return { company: plain(r.properties.Company), role: plain(r.properties.Role), status: r.properties.Status?.select?.name || '',
-    score: r.properties.Score?.number ?? null, notes: plain(r.properties.Notes), connections: plain(r.properties.Connections) };
 }
 
 async function cmdList(apps) {
@@ -170,7 +170,7 @@ function cmdHelp() {
   if (!verb || verb === 'help' || flags.help) return cmdHelp();
   const dbs = await resolveDBs();
   const apps = dbs['Applications'];
-  if (!apps && verb !== 'help') die('Could not resolve the "Applications" database under the Career Ops page. Is the integration shared with it?');
+  if (!apps) die('Could not resolve the "Applications" database under the Career Ops page. Is the integration shared with it?');
   switch (verb) {
     case 'add': return cmdAdd(apps);
     case 'update': return cmdUpdate(apps);

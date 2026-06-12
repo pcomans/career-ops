@@ -21,12 +21,17 @@ const TOKEN = process.env.NOTION_ACCESS_TOKEN;
 export const PARENT = process.env.NOTION_PARENT_PAGE_ID || '';
 const HEADERS = { Authorization: `Bearer ${TOKEN}`, 'Notion-Version': '2022-06-28', 'Content-Type': 'application/json' };
 const MAX = 1900; // safety margin under Notion's 2000-char rich_text limit
+// Native page-markdown export needs >= this API version. Kept separate from the
+// default 2022-06-28 used elsewhere so resolveDBs/queryDB are unaffected by the
+// databases->data-sources split that 2025-09-03 also introduced.
+const MD_VERSION = '2025-09-03';
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-export async function api(path, method, body) {
+export async function api(path, method, body, version) {
   if (!TOKEN) throw new Error('NOTION_ACCESS_TOKEN is not set (.env). The Notion backend needs it to read/write.');
   await sleep(360); // ~3 req/s
-  const r = await fetch(`https://api.notion.com/v1/${path}`, { method, headers: HEADERS, body: body ? JSON.stringify(body) : undefined });
+  const headers = version ? { ...HEADERS, 'Notion-Version': version } : HEADERS;
+  const r = await fetch(`https://api.notion.com/v1/${path}`, { method, headers, body: body ? JSON.stringify(body) : undefined });
   const j = await r.json();
   if (!r.ok) throw new Error(`Notion ${method} ${path} -> ${j.code}: ${j.message}`);
   return j;
@@ -57,16 +62,8 @@ export function statusLabels() { return loadStates().labels.slice(); }
 // ---------- text chunking (never exceed the per-rich_text 2000-char limit) ----------
 function splitContent(str) {
   const out = [];
-  let s = str;
-  while (s.length > MAX) {
-    let cut = s.lastIndexOf('\n', MAX);
-    if (cut < MAX * 0.6) cut = s.lastIndexOf(' ', MAX);
-    if (cut < MAX * 0.6) cut = MAX;
-    out.push(s.slice(0, cut));
-    s = s.slice(cut).replace(/^\s/, '');
-  }
-  out.push(s);
-  return out;
+  for (let i = 0; i < str.length; i += MAX) out.push(str.slice(i, i + MAX));
+  return out.length ? out : [''];
 }
 function splitRuns(runs) {
   const out = [];
@@ -141,39 +138,6 @@ export function mdToBlocks(md) {
   return blocks;
 }
 
-// ---------- Notion blocks -> markdown (reverse, for `get`) ----------
-function richToMd(arr) {
-  return (arr || []).map((t) => {
-    let s = t.plain_text ?? t.text?.content ?? '';
-    const a = t.annotations || {};
-    if (a.code) s = '`' + s + '`';
-    if (a.bold) s = '**' + s + '**';
-    const url = t.href || t.text?.link?.url;
-    if (url) s = `[${s}](${url})`;
-    return s;
-  }).join('');
-}
-export function blocksToMd(blocks) {
-  const out = [];
-  for (const b of blocks) {
-    const t = b.type;
-    const r = (k) => richToMd(b[k]?.rich_text);
-    if (t === 'heading_1') out.push('# ' + r('heading_1'));
-    else if (t === 'heading_2') out.push('## ' + r('heading_2'));
-    else if (t === 'heading_3') out.push('### ' + r('heading_3'));
-    else if (t === 'paragraph') out.push(r('paragraph'));
-    else if (t === 'bulleted_list_item') out.push('- ' + r('bulleted_list_item'));
-    else if (t === 'numbered_list_item') out.push('1. ' + r('numbered_list_item'));
-    else if (t === 'quote') out.push('> ' + r('quote'));
-    else if (t === 'divider') out.push('---');
-    else if (t === 'code') out.push('```\n' + richToMd(b.code?.rich_text) + '\n```');
-    else if (t === 'toggle') out.push('▸ ' + r('toggle') + (b.has_children ? ' …' : ''));
-    else if (t === 'table') out.push('[table]');
-    else out.push('');
-  }
-  return out.join('\n\n');
-}
-
 // ---------- page create / append / read ----------
 export async function createPage(dbId, properties, blocks = []) {
   const page = await api('pages', 'POST', { parent: { database_id: dbId }, properties, children: blocks.slice(0, 100) });
@@ -183,14 +147,11 @@ export async function createPage(dbId, properties, blocks = []) {
 export async function appendBlocks(pageId, blocks) {
   for (let i = 0; i < blocks.length; i += 100) await api(`blocks/${pageId}/children`, 'PATCH', { children: blocks.slice(i, i + 100) });
 }
-export async function getBlocks(pageId) {
-  let cursor, all = [];
-  do {
-    const j = await api(`blocks/${pageId}/children?page_size=100${cursor ? `&start_cursor=${cursor}` : ''}`, 'GET');
-    all.push(...j.results);
-    cursor = j.has_more ? j.next_cursor : null;
-  } while (cursor);
-  return all;
+// Native enhanced-markdown export (Notion renders tables/toggles/nesting server-side).
+export async function pageMarkdown(pageId) {
+  const j = await api(`pages/${pageId}/markdown`, 'GET', undefined, MD_VERSION);
+  if (j.truncated) throw new Error(`Notion truncated markdown for page ${pageId} (page too large).`);
+  return j.markdown || '';
 }
 
 // ---------- DB resolution by name (container-proof, no hardcoded DB ids) ----------
