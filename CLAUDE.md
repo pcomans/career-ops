@@ -8,6 +8,11 @@ The portfolio that goes with this system is also open source: [cv-santiago](http
 
 **It will work out of the box, but it's designed to be made yours.** If the archetypes don't match your career, the modes are in the wrong language, or the scoring doesn't fit your priorities -- just ask. You (AI Agent) can edit the user's files. The user says "change the archetypes to data engineering roles" and you do it. That's the whole point.
 
+## AI Agent Conventions (project rules)
+
+- **Interview / coding practice problem statements contain ONLY the problem** — model, rules, API, levels, examples, optional reference solution. NEVER embed interview coaching (no "say this", no posture, no "what they're evaluating", no weak-spot tips). Keep any performance coaching separate from the problem.
+- **NEVER commit or push to git** the user's interview practice problem statements, or the names of companies they are interviewing at (or any file revealing them: `data/`, `reports/`, `practice/`, `interview-prep/`, `batch/`, `jds/`). The pipeline lives in the private Notion backend, not the repo. Only generic system/tooling code is committed. Before any commit/push, scan the staged diff for company names or problem content; if in doubt, don't push.
+
 ## Data Contract (CRITICAL)
 
 There are two layers. Read `DATA_CONTRACT.md` for the full list.

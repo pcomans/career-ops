@@ -54,3 +54,8 @@ package-lock.json
 
 # Playwright MCP server run artifacts (ephemeral, machine-local — never commit)
 .playwright-mcp/
+# Personal interview prep — never commit (company names / problem statements)
+practice/
+interview-prep/
+migrate-*.mjs
+.scrape-tmp.mjs
