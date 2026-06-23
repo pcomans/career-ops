@@ -2,6 +2,19 @@
 
 When the candidate pastes a job (text or URL), ALWAYS deliver the 7 blocks (A-F evaluation + G legitimacy):
 
+## Liveness gate (URL inputs)
+
+When the candidate pastes a **URL** (not JD text), confirm the posting is still live before doing any evaluation. A dead link must never reach Block A — a 404/expired page wastes a full A-G evaluation, report, and PDF on phantom content.
+
+1. Get the page content: if you arrived here from `auto-pipeline` (its Step 0.5 already navigated and cleared the link), reuse that snapshot — do not navigate again. On a direct URL entry, navigate with Playwright (`browser_navigate` + `browser_snapshot`) and read the title, URL, and visible content.
+2. Classify the posting:
+   - **active posting evidence:** title/role + a real job description or an application/apply path
+   - **closed posting evidence:** expired/closed/"no longer accepting applications", missing JD with only nav/footer, hard redirect to a generic careers/search page, or 404/410
+3. If the posting appears closed, **stop before Block A**: tell the candidate the link is dead, and if the entry came from `data/pipeline.md`, mark it `- [x] ~~Company | Role~~ — oferta nieaktywna`. Do not generate an evaluation, report, or CV.
+4. If the candidate pasted JD text (no URL), liveness cannot be verified — note that and proceed; there is no link to check.
+
+Do not continue to Block A until this gate is resolved. The snapshot captured here is reused by Block G's freshness signals.
+
 ## Step 0 — Archetype Detection
 
 Classify the job into one of the 6 archetypes (see `_shared.md`). If it is a hybrid, indicate the 2 closest ones. This determines:
@@ -71,7 +84,7 @@ Top 5 changes to CV + Top 5 changes to LinkedIn to maximize match.
 
 The **Reflection** column captures what was learned or what would be done differently. This signals seniority — junior candidates describe what happened, senior candidates extract lessons.
 
-**Story Bank:** Use `interview-prep/story-bank.md` (the user's live bank, gitignored). If it does not exist yet, seed it once by copying `interview-prep/story-bank.template.md`. Check whether any of these stories are already there; if not, append new ones. Over time this builds a reusable bank of 5-10 master stories that can be adapted to any interview question.
+**Story Bank:** If `interview-prep/story-bank.md` exists, check if any of these stories are already there. If not, append new ones. Over time this builds a reusable bank of 5-10 master stories that can be adapted to any interview question.
 
 **Selected and framed according to the archetype:**
 - FDE → emphasize delivery speed and client-facing
@@ -93,7 +106,7 @@ Analyze the job posting for signals that indicate whether this is a real, active
 
 ### Signals to analyze (in order):
 
-**1. Posting Freshness** (from Playwright snapshot, already captured in Step 0):
+**1. Posting Freshness** (from the Playwright snapshot captured during the liveness gate, or in `auto-pipeline` Step 0; unavailable if only JD text was pasted):
 - Date posted or "X days ago" -- extract from page
 - Apply button state (active / closed / missing / redirects to generic page)
 - If URL redirected to generic careers page, note it
@@ -140,21 +153,62 @@ Analyze the job posting for signals that indicate whether this is a real, active
 - **No date available:** If posting age cannot be determined and no other signals are concerning, default to "Proceed with Caution" with a note that limited data was available. NEVER default to "Suspicious" without evidence.
 - **Recruiter-sourced (no public posting):** Freshness signals unavailable. Note that active recruiter contact is itself a positive legitimacy signal.
 
-## Scoring — Gates → Substance → Bucket
+---
 
-After blocks A-G, score per the framework in `_shared.md`, with the user's specific
-gate/axis definitions from `_profile.md`:
+## Cover Letter Draft (auto-generated after Block G)
 
-1. **Gates:** evaluate each hard gate PASS/FAIL (e.g. Location from Block A remote
-   policy, Level from Block C, Lane from Step 0 archetype). State each verdict.
-2. **Substance:** score 1-5 on the role's own merits (Fit/Caliber/Comp per
-   `_profile.md`). This is the `Score`. **A gate failure must NOT pull this number
-   down**; gates and Substance are independent.
-3. **Bucket:** derive Serious / Practice / Skip from the gates + Substance using the
-   rule in `_profile.md` (a core-gate failure → Skip; only the practice-eligible gate
-   failing at a high bar → Practice; all gates PASS + high Substance → Serious).
+After saving the report and recording in the tracker, append a cover letter draft to the report file under `## Cover Letter Draft`. This is a starting point — not the final letter. The user completes it via `/career-ops cover {slug}`.
 
-Put all three in the report header (`**Score:**`, `**Gates:**`, `**Bucket:**`).
+**How to generate the draft:**
+
+1. Read `cv.md` — select 4 achievement bullets most relevant to the JD's top requirements (exact wording, real metrics only)
+2. Read `config/profile.yml` — extract candidate name, current role, years of experience
+3. Write a 2-sentence opening based on the role title and JD mission language
+4. Write a 1-paragraph profile intro from the cv.md summary, adapted to the JD domain
+5. Leave the "Problems / Why this company / Approach" section as a placeholder — this requires user input
+6. Detect and flag any gaps (domain mismatch, language requirement, start date urgency) so the user sees them immediately
+
+**Draft format to append to the report:**
+
+```markdown
+## Cover Letter Draft
+
+> Draft generated at evaluation time. Complete via `/career-ops cover {slug}` to fill in angles, confirm research, and generate the PDF.
+> Gaps flagged below — address them during the cover flow.
+
+---
+
+**Opening** *(placeholder — refine with your "why this role" angle)*
+{2-sentence opening based on JD role title and mission language}
+
+**Profile introduction**
+{1 paragraph from cv.md summary, adapted to JD domain and required competencies}
+
+**Key achievements** *(selected from cv.md — exact wording preserved)*
+- **{lead from cv.md},** {impact sentence with metric}.
+- **{lead from cv.md},** {impact sentence with metric}.
+- **{lead from cv.md},** {impact sentence with metric}.
+- **{lead from cv.md},** {impact sentence with metric}.
+
+**Problems I will solve** *(placeholder — requires company research + your input)*
+> To be completed: what challenges does {company} face that you'd address? How would you approach them?
+
+**Closing**
+I am happy to discuss further at your convenience.
+
+---
+
+**Gaps flagged:**
+{List any detected gaps — domain mismatch, language requirement, start date urgency, title mismatch. If none, write "None detected."}
+
+**JD keywords to mirror** *(extracted for ATS + human read)*
+{8-10 exact phrases from the JD}
+
+---
+*Run `/career-ops cover {slug}` to complete angles, confirm company research, and generate the PDF.*
+```
+
+Apply all language rules from `_shared.md` Professional Writing section to the draft content. No em dashes, no buzzwords, active voice, concrete claims only.
 
 ---
 
@@ -166,7 +220,7 @@ Put all three in the report header (`**Score:**`, `**Gates:**`, `**Bucket:**`).
 
 Save full evaluation in `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 
-- `{###}` = next sequential number (3 digits, zero-padded)
+- `{###}` = next sequential number (3 digits, zero-padded). To allocate it atomically and prevent race conditions, you MUST run `node reserve-report-num.mjs` to claim the number (stdout returns `{###}`), write the report, and then run `node reserve-report-num.mjs --release {###}` to release the sentinel.
 - `{company-slug}` = company name in lowercase, without spaces (use hyphens)
 - `{YYYY-MM-DD}` = current date
 
@@ -178,9 +232,7 @@ Save full evaluation in `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 **Date:** {YYYY-MM-DD}
 **URL:**
 **Archetype:** {detected}
-**Score:** {X/5}  <!-- Substance: role on its own merits (see _shared.md) -->
-**Gates:** Location {PASS|FAIL} · Level {PASS|FAIL} · Lane {PASS|FAIL}
-**Bucket:** {Serious | Practice | Skip}
+**Score:** {X/5}
 **Legitimacy:** {High Confidence | Proceed with Caution | Suspicious}
 **PDF:** {path or pending}
 
@@ -218,22 +270,12 @@ Save full evaluation in `reports/{###}-{company-slug}-{YYYY-MM-DD}.md`.
 
 ### 2. Record in tracker
 
-**ALWAYS** record the evaluation. On the Notion backend, log via the CLI so the new
-scoring fields are written:
-
-```
-node notion.mjs add --company "X" --role "Y" --status Evaluated \
-  --score {substance 1-5} --bucket {Serious|Practice|Skip} \
-  --gate-location {pass|fail} --gate-level {pass|fail} --gate-lane {pass|fail} \
-  --url ... --report reports/{###}-{slug}-{date}.md
-```
-
-For the file-based tracker (`data/applications.md`), record:
+**ALWAYS** record in `data/applications.md`:
 - Next sequential number
 - Current date
 - Company
 - Role
-- Score: Substance (1-5)
+- Score: match average (1-5)
 - Status: `Evaluated`
 - PDF: ❌ (or ✅ if auto-pipeline generated PDF)
 - Report: root-relative link `[001](reports/001-company-2026-01-01.md)` (when merged via `merge-tracker.mjs` it is normalized to be relative to the tracker's own dir, e.g. `../reports/...`; see #760)

@@ -1,5 +1,117 @@
 # Changelog
 
+## [1.12.0](https://github.com/santifer/career-ops/compare/career-ops-v1.11.0...career-ops-v1.12.0) (2026-06-18)
+
+
+### Features
+
+* **batch:** add --status and --watch progress monitoring to batch-runner.sh ([#922](https://github.com/santifer/career-ops/issues/922)) ([#966](https://github.com/santifer/career-ops/issues/966)) ([802552f](https://github.com/santifer/career-ops/commit/802552ff72809d36f42c00ff4cd36affb0f6bf1f))
+* **cli:** add Antigravity CLI compatibility ([61de18d](https://github.com/santifer/career-ops/commit/61de18db165cf864c11afd7d4e3224bc7fe6596b))
+* **i18n:** add Chinese language modes for China-market job seekers ([#934](https://github.com/santifer/career-ops/issues/934)) ([#965](https://github.com/santifer/career-ops/issues/965)) ([207f960](https://github.com/santifer/career-ops/commit/207f9600e4cf15718ae44d064c9e9ec7cc7a77b3))
+* **pdf:** render Japanese CVs with a lang="ja" CJK font fallback ([#1053](https://github.com/santifer/career-ops/issues/1053)) ([d0d57d1](https://github.com/santifer/career-ops/commit/d0d57d184649615b638812156a24c87ceafab8a2))
+* **providers:** add Jobstreet and Glints providers for the Indonesian market ([728d547](https://github.com/santifer/career-ops/commit/728d54777dd546fef37373b400aa13cfee38f374)), closes [#1085](https://github.com/santifer/career-ops/issues/1085)
+* **providers:** add RemoteOK, Remotive, Working Nomads, IBM board providers ([349bacc](https://github.com/santifer/career-ops/commit/349bacc9d9ad377d6d85ae35fe87625c1b3a6114)), closes [#1075](https://github.com/santifer/career-ops/issues/1075)
+* **providers:** port Arbeitsagentur to an in-process provider ([#1095](https://github.com/santifer/career-ops/issues/1095)) ([504a2f0](https://github.com/santifer/career-ops/commit/504a2f054625c16f777693a56c789599c0bacdfa))
+* **scan:** add content/description filter for providers ([#974](https://github.com/santifer/career-ops/issues/974)) ([21d6c86](https://github.com/santifer/career-ops/commit/21d6c86f12071217aefbcbca397ebb957f361f92))
+
+
+### Bug Fixes
+
+* **ashby:** include secondaryLocations so EU-eligible roles surface ([a84d3f5](https://github.com/santifer/career-ops/commit/a84d3f51e436e8b36305c38d2ed5dd8438aa5f90)), closes [#1073](https://github.com/santifer/career-ops/issues/1073)
+* **batch:** reconcile pipeline.md inbox after batch runs ([#712](https://github.com/santifer/career-ops/issues/712)) ([34c3d0e](https://github.com/santifer/career-ops/commit/34c3d0ea60e1dcfda4985112ef4577bbb8b1faf3))
+* **dashboard:** archetype regex matches English and Spanish reports ([#977](https://github.com/santifer/career-ops/issues/977)) ([d619d3b](https://github.com/santifer/career-ops/commit/d619d3b5ca24fda2ab94cf90111f2b42b2f2691a))
+* **dashboard:** open Windows targets without shell ([#987](https://github.com/santifer/career-ops/issues/987)) ([6dc36fb](https://github.com/santifer/career-ops/commit/6dc36fb0792d1157ec96bfb5c3ac4f10cf303305))
+* **dashboard:** report last-contact in calendar days, not hours-since-midnight ([#1057](https://github.com/santifer/career-ops/issues/1057)) ([4e05cfd](https://github.com/santifer/career-ops/commit/4e05cfda98b5dccfd2c664c12335ee20812b451b))
+* **followup:** resolve report path relative to tracker directory ([752f3b9](https://github.com/santifer/career-ops/commit/752f3b9d598686e56227d8c48063213fdd302a85)), closes [#1070](https://github.com/santifer/career-ops/issues/1070)
+* **followup:** use the real application date from notes, not the eval date ([#1096](https://github.com/santifer/career-ops/issues/1096)) ([#1097](https://github.com/santifer/career-ops/issues/1097)) ([53785c8](https://github.com/santifer/career-ops/commit/53785c895750b5c69876ed5b1d6d05fb86c022be))
+* **gemini:** validate evaluation report shape ([#819](https://github.com/santifer/career-ops/issues/819)) ([a0aa264](https://github.com/santifer/career-ops/commit/a0aa26421b9abc14079f950519bad934134db66c))
+* **latex:** language-agnostic section validation + CJK guard ([#1054](https://github.com/santifer/career-ops/issues/1054)) ([b147504](https://github.com/santifer/career-ops/commit/b147504ade6f1f6fb0445dbe09dfcf380ab01260))
+* **merge-tracker:** require company match for number-based dedup ([2bb514f](https://github.com/santifer/career-ops/commit/2bb514f31b38c7a520545da0c4d3567f7103f608)), closes [#912](https://github.com/santifer/career-ops/issues/912)
+* **pdf:** auto-install Playwright chromium after update ([eb504ad](https://github.com/santifer/career-ops/commit/eb504adec46ac7b144d1cbc8ca6e2cc6f18173e3))
+* **pdf:** use ATS-safe system fonts for clean CV text extraction ([17033e8](https://github.com/santifer/career-ops/commit/17033e8213a519aa082e790b3cc4702f5bd7266b)), closes [#1074](https://github.com/santifer/career-ops/issues/1074)
+* **pipeline:** add batch liveness sweep for unconfirmed entries ([#750](https://github.com/santifer/career-ops/issues/750)) ([#973](https://github.com/santifer/career-ops/issues/973)) ([e9eba87](https://github.com/santifer/career-ops/commit/e9eba87367740080e2330b0c6f1e025231e01d86))
+* **scan:** sanitize external metadata before writes ([#1098](https://github.com/santifer/career-ops/issues/1098)) ([61bad36](https://github.com/santifer/career-ops/commit/61bad36fc4547c7f28b1ed92e963c9f8143c35c5))
+* **security:** harden local-parser against command/arg injection and scan-ats against SSRF ([721f1a8](https://github.com/santifer/career-ops/commit/721f1a863a83d188242a474df3e54c2b673e5b99))
+* **tracker:** preserve notes column when rewriting rows without a trailing pipe ([#1004](https://github.com/santifer/career-ops/issues/1004)) ([0569518](https://github.com/santifer/career-ops/commit/0569518b22eae190df0eeb6675536aaa89c71840))
+* **update:** materialize skill entrypoints without symlinks ([#1067](https://github.com/santifer/career-ops/issues/1067)) ([3ef63c8](https://github.com/santifer/career-ops/commit/3ef63c8531c60c3cd1a5f8a6088097f914b89907))
+* **updater:** git-safety on abort + preserve user files on safety-violation rollback ([#915](https://github.com/santifer/career-ops/issues/915)) ([#1099](https://github.com/santifer/career-ops/issues/1099)) ([deef636](https://github.com/santifer/career-ops/commit/deef6365fa01604f7d6abcd14e1817e22c0d2b05))
+
+## [1.11.0](https://github.com/santifer/career-ops/compare/career-ops-v1.10.0...career-ops-v1.11.0) (2026-06-15)
+
+
+### Features
+
+* add first-class OpenCode support alongside Claude Code ([#707](https://github.com/santifer/career-ops/issues/707)) ([2710fbe](https://github.com/santifer/career-ops/commit/2710fbe9b31cd0c6d1a8765cd5e04c255ede4ca3))
+* **cover:** add optional salutation/greeting to cover letters ([#1010](https://github.com/santifer/career-ops/issues/1010)) ([99346c1](https://github.com/santifer/career-ops/commit/99346c148fbd19e4040be457f860b27fe678e8d7))
+* **cover:** load _profile.md so personalization governs the letter ([#1012](https://github.com/santifer/career-ops/issues/1012)) ([dff56d3](https://github.com/santifer/career-ops/commit/dff56d3903c85251e6fdd008feb02ba464a5d0dc))
+* **doctor:** warn when Playwright MCP tools are not configured ([#938](https://github.com/santifer/career-ops/issues/938)) ([0222224](https://github.com/santifer/career-ops/commit/0222224c108c210d715ef4f5cac42a2edac24809))
+* **tracker:** map tracker columns by header name ([#954](https://github.com/santifer/career-ops/issues/954)) ([57b34c0](https://github.com/santifer/career-ops/commit/57b34c07e01cd106528936398507e1b4552ca295))
+* **tracker:** SQLite derived index over applications.md — phase 1 ([#919](https://github.com/santifer/career-ops/issues/919)) ([5465f16](https://github.com/santifer/career-ops/commit/5465f162bb71dec8a25391265bdd498db2d6b512))
+
+
+### Bug Fixes
+
+* **cv:** align certification org column width across rows ([#931](https://github.com/santifer/career-ops/issues/931)) ([e27b051](https://github.com/santifer/career-ops/commit/e27b051eaf1d96ea56ebbeabd7535d19225922d2))
+* **deps:** update npm dependencies to v1.61.0 ([#1023](https://github.com/santifer/career-ops/issues/1023)) ([5407247](https://github.com/santifer/career-ops/commit/54072470ab440b1b358a18ab6de9672cc4cb5649))
+* **eval:** gate dead links before evaluation in oferta and auto-pipeline ([#937](https://github.com/santifer/career-ops/issues/937)) ([ebf9a13](https://github.com/santifer/career-ops/commit/ebf9a13762f5bbb2e0d9bdf17c7f0b96e32c4e94))
+* **generate-pdf:** inline local fonts as data: URLs so they actually embed ([#952](https://github.com/santifer/career-ops/issues/952)) ([08d1e9a](https://github.com/santifer/career-ops/commit/08d1e9a504cfa8198fb1c84ee824b80de2324df8))
+* **merge-tracker:** serialize concurrent tracker merges with a filesystem lock ([#941](https://github.com/santifer/career-ops/issues/941)) ([0d57994](https://github.com/santifer/career-ops/commit/0d579944d99276cf85d0d2280cc2697ee7a95140))
+* **pdf:** wait for load instead of networkidle during render ([#929](https://github.com/santifer/career-ops/issues/929)) ([fd2ce04](https://github.com/santifer/career-ops/commit/fd2ce043713874f354980dca0e5778272cdb96a0))
+* remove story-bank.md from git tracking ([#944](https://github.com/santifer/career-ops/issues/944)) ([67662b9](https://github.com/santifer/career-ops/commit/67662b9dad68175a06c631baac523437a93d44f2))
+* **skill:** surface latex mode in command menus ([#928](https://github.com/santifer/career-ops/issues/928)) ([2803348](https://github.com/santifer/career-ops/commit/2803348129078960d752c34e75bf253cd32aec06))
+* **tests:** run tracker-mutating scripts with --dry-run in script checks ([#925](https://github.com/santifer/career-ops/issues/925)) ([1acf27d](https://github.com/santifer/career-ops/commit/1acf27d2d154b8d12c246c8c5fed443dec08384b))
+* **tracker:** prevent dedup from deleting distinct same-company roles ([#950](https://github.com/santifer/career-ops/issues/950)) ([98b32a4](https://github.com/santifer/career-ops/commit/98b32a445abe1bb464dbc15ebb1c450a82772564))
+* **update:** distribute missing runtime paths ([#991](https://github.com/santifer/career-ops/issues/991)) ([85ae717](https://github.com/santifer/career-ops/commit/85ae717b8dd331a87ffb58f66181465f4509a17c))
+* **update:** match Release Please component-prefixed tags in version check ([#926](https://github.com/santifer/career-ops/issues/926)) ([6f0e289](https://github.com/santifer/career-ops/commit/6f0e2890e91b178cdc82a403427152247516e559))
+* **update:** rebuild dashboard binary after Go source changes ([#953](https://github.com/santifer/career-ops/issues/953)) ([5382d37](https://github.com/santifer/career-ops/commit/5382d37f65dde222d73ce059f804be9f4853d922))
+* **update:** use target updater manifest during apply ([#983](https://github.com/santifer/career-ops/issues/983)) ([539e47b](https://github.com/santifer/career-ops/commit/539e47bdc59462c883964549a01e312d58e996e1))
+
+## [1.10.0](https://github.com/santifer/career-ops/compare/career-ops-v1.9.0...career-ops-v1.10.0) (2026-06-11)
+
+
+### Features
+
+* **apply:** add preflight liveness and role-match gate ([#887](https://github.com/santifer/career-ops/issues/887)) ([42bb9ab](https://github.com/santifer/career-ops/commit/42bb9ab1aa73397d88a6759def9d4579c979eac3))
+* **batch:** pause batch runner on Claude session limits ([#874](https://github.com/santifer/career-ops/issues/874)) ([ae6beec](https://github.com/santifer/career-ops/commit/ae6beec28b83fb184325f3fd261816684613b3ae))
+* **cover:** add cover letter generation mode ([#807](https://github.com/santifer/career-ops/issues/807)) ([493f822](https://github.com/santifer/career-ops/commit/493f82268608b447fab2a4b5f60d8ee169bc2679))
+* **cv:** add build-cv-latex.mjs structured JSON to LaTeX renderer ([#905](https://github.com/santifer/career-ops/issues/905)) ([b4af01f](https://github.com/santifer/career-ops/commit/b4af01f0858ecd707bcd168b3771a6d3cd76f2ba))
+* **dashboard:** keep discard reason visible in pipeline preview ([#914](https://github.com/santifer/career-ops/issues/914)) ([3200dfe](https://github.com/santifer/career-ops/commit/3200dfe34805b5e5f2cfc1850da31bdad1c627fa))
+* **dashboard:** sortable Location, Pay, and Last-contact columns in pipeline view ([#798](https://github.com/santifer/career-ops/issues/798)) ([265a95b](https://github.com/santifer/career-ops/commit/265a95befd4f5d0b42ecee104446129898f4ad0c))
+* dockerize project for hosts blocked from native Playwright install ([#625](https://github.com/santifer/career-ops/issues/625)) ([66404a8](https://github.com/santifer/career-ops/commit/66404a81a617ad0b076df2a8607aad03996124a7))
+* **doctor:** adopt doctor --json as the single onboarding state source ([#888](https://github.com/santifer/career-ops/issues/888)) ([35e2124](https://github.com/santifer/career-ops/commit/35e212429ec98442d83fe47b08636c5688f90055))
+* **followup:** read cadence settings from profile.yml ([#889](https://github.com/santifer/career-ops/issues/889)) ([8050c37](https://github.com/santifer/career-ops/commit/8050c37870fe2e3fe14c1da836f00d1a7a8819fe))
+* **i18n:** add full Arabic language support and modes ([#764](https://github.com/santifer/career-ops/issues/764)) ([333bb81](https://github.com/santifer/career-ops/commit/333bb81bcc4e3d7e93928ba1b6d155110ce79cd7))
+* **modes:** add interactive interview onboarding subcommand ([#909](https://github.com/santifer/career-ops/issues/909)) ([46a5c59](https://github.com/santifer/career-ops/commit/46a5c5914aab6389ab51d4d393d5575a06f229e6))
+* **scan:** add --rediscover-404 fallback for moved tracked postings ([#808](https://github.com/santifer/career-ops/issues/808)) ([7096dbc](https://github.com/santifer/career-ops/commit/7096dbc31067963f0a08d95185f7a2b4c5539f91))
+* **scan:** add configurable salary filtering to the zero-token scanner ([#677](https://github.com/santifer/career-ops/issues/677)) ([a6ea02e](https://github.com/santifer/career-ops/commit/a6ea02ea354de05f6cb50a6c578fab3e1c5c0dd8))
+* **scan:** add portals.yml schema validator ([#886](https://github.com/santifer/career-ops/issues/886)) ([3340695](https://github.com/santifer/career-ops/commit/33406955e5c619c088a0e3063b6e08d445dc1105))
+* **scan:** add scan-ats-full.mjs — reverse-discover jobs from public ATS APIs ([#746](https://github.com/santifer/career-ops/issues/746)) ([7801dc7](https://github.com/santifer/career-ops/commit/7801dc7ecdc1ef1a3385fe6eb0797bb03cf6d047))
+* **scan:** add scan-history TTL and recheck policy ([#895](https://github.com/santifer/career-ops/issues/895)) ([1db4cf2](https://github.com/santifer/career-ops/commit/1db4cf2072bdb235bb423b61d2d4da4773c9fa49))
+* **scan:** add SolidJobs provider and job_boards support ([#853](https://github.com/santifer/career-ops/issues/853)) ([79862a9](https://github.com/santifer/career-ops/commit/79862a9e0ed0938576e91f6785c7fbc5dc2c4d7c))
+
+
+### Bug Fixes
+
+* **apply:** preserve form field contracts ([#821](https://github.com/santifer/career-ops/issues/821)) ([2b38fd0](https://github.com/santifer/career-ops/commit/2b38fd09e59e5b709069a1f504f3a8553a1cc0f7))
+* **batch:** append profile context to worker prompts ([#815](https://github.com/santifer/career-ops/issues/815)) ([4989afc](https://github.com/santifer/career-ops/commit/4989afc112e9fa052b3d489cb5ba198ee0a552ee))
+* **batch:** isolate workers from inherited MCP to prevent parallel deadlock ([#809](https://github.com/santifer/career-ops/issues/809)) ([c8c0dbd](https://github.com/santifer/career-ops/commit/c8c0dbd5f96874530f70a2e490f261ee5eaa3ed0))
+* **batch:** stop after min-score skip instead of falling through to completed ([#873](https://github.com/santifer/career-ops/issues/873)) ([888ca31](https://github.com/santifer/career-ops/commit/888ca3139411feb5282a3a2ec53c5f8a8390f0e4))
+* **dashboard:** resolve tracker-relative report links against the tracker directory ([#780](https://github.com/santifer/career-ops/issues/780)) ([858fc93](https://github.com/santifer/career-ops/commit/858fc9334f38f8767ec3d93cdac4bdb5e754aeff)), closes [#779](https://github.com/santifer/career-ops/issues/779)
+* **doctor:** single source of truth for onboarding state via doctor --json ([#765](https://github.com/santifer/career-ops/issues/765)) ([eb536c4](https://github.com/santifer/career-ops/commit/eb536c49580ba17a9e63064f3893248a4c58c576))
+* **flake:** declare systems so the devShell resolves on macOS ([#848](https://github.com/santifer/career-ops/issues/848)) ([e5f0903](https://github.com/santifer/career-ops/commit/e5f09038e7cd9135db535927db219813d94a71ce)), closes [#334](https://github.com/santifer/career-ops/issues/334)
+* **liveness:** stop false-expiring postings behind anti-bot walls ([#783](https://github.com/santifer/career-ops/issues/783)) ([a667c33](https://github.com/santifer/career-ops/commit/a667c337acc4b68e3e937fd4ce5280bb77b3ce4a))
+* **merge-tracker:** require company match on exact entry-number dedup ([#867](https://github.com/santifer/career-ops/issues/867)) ([10ad2de](https://github.com/santifer/career-ops/commit/10ad2de161f7d45ee51e7895c4a47aa556207cb3))
+* **merge-tracker:** use token-union ratio in roleFuzzyMatch to stop cross-role dedup ([#793](https://github.com/santifer/career-ops/issues/793)) ([cfa7505](https://github.com/santifer/career-ops/commit/cfa750573a8dfbcc3b825311e6c910d51719e54f)), closes [#751](https://github.com/santifer/career-ops/issues/751)
+* **patterns:** parse header-style and Detected-archetype formats in analyze-patterns ([#723](https://github.com/santifer/career-ops/issues/723)) ([abf603c](https://github.com/santifer/career-ops/commit/abf603c885eab6b3741b0cf41297ac2b9a960cc4))
+* **pdf:** reject CV section ordering that diverges from cv.md source ([#817](https://github.com/santifer/career-ops/issues/817)) ([9f6acc2](https://github.com/santifer/career-ops/commit/9f6acc2acf5e77ab504990bb483d0e2c29c9b313))
+* **pipeline:** atomic report-number reservation for parallel workers ([#803](https://github.com/santifer/career-ops/issues/803)) ([c42368c](https://github.com/santifer/career-ops/commit/c42368c189b611044a666d7d11fe81ba5a78c6ad))
+* **release:** auto-sync VERSION via release-please generic extra-file ([214f5f8](https://github.com/santifer/career-ops/commit/214f5f8a7ca06f8b1225aed49709022e4c9f32e8))
+* **release:** sync VERSION file to 1.9.0 ([461e3d9](https://github.com/santifer/career-ops/commit/461e3d91f6a48419c5b51fa17e6765bf8d174a3c))
+* **security:** close SSRF guard bypasses in liveness-browser ([#917](https://github.com/santifer/career-ops/issues/917)) ([1f525c4](https://github.com/santifer/career-ops/commit/1f525c4e4a661c1153b526e3e210a444007e388e))
+* **update:** bootstrap tracker-links.mjs and scaffolder/ for v1.8.x to v1.9.0 upgrades ([#921](https://github.com/santifer/career-ops/issues/921)) ([1d3a18b](https://github.com/santifer/career-ops/commit/1d3a18be5822fe40feb3e5629890a3eb7d752bcf))
+* **update:** run curl version checks concurrently in check() ([#896](https://github.com/santifer/career-ops/issues/896)) ([8f0ed38](https://github.com/santifer/career-ops/commit/8f0ed384245f8f859da08e188d873367ffc394f6))
+* **update:** use curl in check() so updates work inside the Claude Code sandbox ([#802](https://github.com/santifer/career-ops/issues/802)) ([8cac7f3](https://github.com/santifer/career-ops/commit/8cac7f33deeba69674682c5d77883b0e5b3eaba2)), closes [#754](https://github.com/santifer/career-ops/issues/754)
+
 ## [1.9.0](https://github.com/santifer/career-ops/compare/career-ops-v1.8.0...career-ops-v1.9.0) (2026-06-09)
 
 
