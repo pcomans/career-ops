@@ -332,3 +332,19 @@ Write one TSV file per evaluation to `batch/tracker-additions/{num}-{company-slu
 **RULES:** no markdown bold (`**`), no dates (those go in the date column), no extra text (use the notes column) in the status field.
 @AGENTS.md
 <!-- Add anything Claude Code specific that other agents don't need -->
+
+## Tracking a live collaborative pad (rustpad / Monaco editors)
+
+Rustpad and similar Monaco-based collaborative editors deliver the document text over a **WebSocket after page load**, so a plain `WebFetch`/HTTP GET returns only an empty app shell. To read the live contents you must drive a real browser.
+
+**Read the contents (Playwright):**
+1. `browser_navigate` to the pad URL, then `browser_wait_for` ~3s so the WebSocket syncs.
+2. `browser_evaluate` with `() => { const m = window.monaco && monaco.editor.getModels()[0]; return m ? m.getValue() : null; }`. Reading the Monaco *model* returns the full document; scraping `.view-line` DOM nodes only yields the virtualized (visible) subset, so avoid it.
+3. `browser_evaluate`'s `filename` option writes the result **JSON-stringified** (single line, `\n`/`\"` escaped), not raw text. Decode before diffing, e.g. `node -e 'const fs=require("fs");process.stdout.write(JSON.parse(fs.readFileSync(process.argv[1],"utf8"))||"")' <file>`.
+4. The browser sandbox only writes inside the repo root, so use a **gitignored** landing path (e.g. `.playwright-mcp/`), then move the decoded text out to a scratch/working dir.
+
+**Store diffs (progress trail):** keep `latest.txt` (last known state), `snapshots/<ts>.txt` (full copy per change), and `diffs.log` (timestamped `diff -u`). Each poll: decode -> `new.txt` -> `diff latest.txt new.txt`; on change append the unified diff, save a snapshot, and `mv new.txt latest.txt`; if identical, write nothing (avoids false positives).
+
+**Poll on a schedule:** wrap read+record in a recurring job (`CronCreate` `*/5 * * * *`, or the `loop` skill). If navigation fails with "Browser is already in use", the MCP chrome was orphaned: `pkill -f mcp-chrome-<id>` and delete the `Singleton*` files in that profile dir, then navigate again.
+
+**Keep captures out of git:** the capture path stays gitignored and the diff store lives outside the repo. This note documents the *technique* only; never commit captured pad contents.
