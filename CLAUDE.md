@@ -8,6 +8,12 @@ The portfolio that goes with this system is also open source: [cv-santiago](http
 
 **It will work out of the box, but it's designed to be made yours.** If the archetypes don't match your career, the modes are in the wrong language, or the scoring doesn't fit your priorities -- just ask. You (AI Agent) can edit the user's files. The user says "change the archetypes to data engineering roles" and you do it. That's the whole point.
 
+## AI Agent Conventions (project rules)
+
+- **Interview / coding practice problem statements contain ONLY the problem** — model, rules, API, levels, examples, optional reference solution. NEVER embed interview coaching (no "say this", no posture, no "what they're evaluating", no weak-spot tips). Keep any performance coaching separate from the problem.
+- **NEVER commit or push to git** the user's interview practice problem statements, or the names of companies they are interviewing at (or any file revealing them: `data/`, `reports/`, `practice/`, `interview-prep/`, `batch/`, `jds/`). The pipeline lives in the private Notion backend, not the repo. Only generic system/tooling code is committed. Before any commit/push, scan the staged diff for company names or problem content; if in doubt, don't push.
+- **NEVER reason or act on truncated Notion/tracker output.** Tool results and commands like `notion.mjs list` can exceed the view and be cut off (piping through `head`, token limits, paging). Before concluding a record is absent (e.g., checking for a duplicate before adding an entry), fetch the COMPLETE result: filter with `--company`, use `--json`, or page through. A truncated list is never evidence that a record does not exist.
+
 ## Data Contract (CRITICAL)
 
 There are two layers. Read `DATA_CONTRACT.md` for the full list.
@@ -375,3 +381,19 @@ Write one TSV file per evaluation to `batch/tracker-additions/{num}-{company-slu
 - No extra text (use the notes column)
 @AGENTS.md
 <!-- Add anything Claude Code specific that other agents don't need -->
+
+## Tracking a live collaborative pad (rustpad / Monaco editors)
+
+Rustpad and similar Monaco-based collaborative editors deliver the document text over a **WebSocket after page load**, so a plain `WebFetch`/HTTP GET returns only an empty app shell. To read the live contents you must drive a real browser.
+
+**Read the contents (Playwright):**
+1. `browser_navigate` to the pad URL, then `browser_wait_for` ~3s so the WebSocket syncs.
+2. `browser_evaluate` with `() => { const m = window.monaco && monaco.editor.getModels()[0]; return m ? m.getValue() : null; }`. Reading the Monaco *model* returns the full document; scraping `.view-line` DOM nodes only yields the virtualized (visible) subset, so avoid it.
+3. `browser_evaluate`'s `filename` option writes the result **JSON-stringified** (single line, `\n`/`\"` escaped), not raw text. Decode before diffing, e.g. `node -e 'const fs=require("fs");process.stdout.write(JSON.parse(fs.readFileSync(process.argv[1],"utf8"))||"")' <file>`.
+4. The browser sandbox only writes inside the repo root, so use a **gitignored** landing path (e.g. `.playwright-mcp/`), then move the decoded text out to a scratch/working dir.
+
+**Store diffs (progress trail):** keep `latest.txt` (last known state), `snapshots/<ts>.txt` (full copy per change), and `diffs.log` (timestamped `diff -u`). Each poll: decode -> `new.txt` -> `diff latest.txt new.txt`; on change append the unified diff, save a snapshot, and `mv new.txt latest.txt`; if identical, write nothing (avoids false positives).
+
+**Poll on a schedule:** wrap read+record in a recurring job (`CronCreate` `*/5 * * * *`, or the `loop` skill). If navigation fails with "Browser is already in use", the MCP chrome was orphaned: `pkill -f mcp-chrome-<id>` and delete the `Singleton*` files in that profile dir, then navigate again.
+
+**Keep captures out of git:** the capture path stays gitignored and the diff store lives outside the repo. This note documents the *technique* only; never commit captured pad contents.
